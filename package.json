@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npx nodemon index.js --port=5000 --debug",
-    "start": "node index.js"
+    "start": "node index.js",
+    "bruh": "/public/index.html"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
   "homepage": "https://github.com/comp426-2022-spring/a05-johnmar3#readme",
   "dependencies": {
     "better-sqlite3": "^7.5.1",
+    "browser-sync": "^2.27.7",
     "express": "^4.17.3",
     "minimist": "^1.2.6",
     "morgan": "^1.10.0",
