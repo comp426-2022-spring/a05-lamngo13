@@ -1,12 +1,3 @@
-//import { coinFlip, coinFlips, countFlips, flipACoin} from './modules/coin.mjs'
-//import { createRequire } from 'module'
-//import { isArgumentsObject } from 'util/types'
-
-//let {coinFlip, coinFlips, countFlips, flipACoin} = await import('./modules/coin.mjs');
-//let {coinFlip, coinFlips, countFlips, flipACoin} = await import('./modules/coin.mjs');
-//const require = createRequire(import.meta.url)
-//MAYBE DONT DO THIS ^^^
-
 const express = require('express')
 const app = express()
 const db = require("./src/services/database.js")
@@ -14,6 +5,7 @@ const morgan = require('morgan')
 const fs = require('fs')
 //import stuff as module?????
 const coinfs = require('./modules/coin.mjs')
+
 //make require bettersqulite3?
 
 //COIN FUNCTION DEFS
