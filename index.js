@@ -180,5 +180,5 @@ const server = app.listen(port, () => {
 process.on('SIGINT', () => {
   server.close(() => {
   console.log('\nApp stopped.');
-});
+  });
 });
