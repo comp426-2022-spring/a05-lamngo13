@@ -44,8 +44,51 @@ async function flipCoins(event) {
     } catch (error) {
         console.log(error);
     }
-    //still inside the chonker
-
-    }
+}
 //end big chonker
+
+const call = document.getElementById("")
+call.addEventListener("submit", flipCall)
+
+//start the chonker
+async function flipCall(event) {
+    event.preventDefault();
+    const endpoint = "app/flip/call/"
+    const url = document.baseURI+endpoint
+    const formEvent = event.currentTarget
+    try {
+            const formData = new FormData(formEvent);
+            const results = await sendFlips({url, formData});
+            console.log(results);
+
+            document.getElementById("choice").innerHTML = "Guess: "+results.call;
+		document.getElementById("actual").innerHTML = "Actual: "+results.flip;
+		document.getElementById("results").innerHTML = "Result: "+results.result;
+// Assemble a list containing images corresponding to the game results
+    document.getElementById("coingame").innerHTML = '<li><img src="assets/img/'+results.call+'.png" class="bigcoin" id="callcoin"></li><li><img src="assets/img/'+results.flip+'.png" class="bigcoin"></li><li><img src="assets/img/'+results.result+'.png" class="bigcoin"></li>';
+	} catch (error) {
+		console.log(error);
+	}
+}
+//end chonker
+
+//start new chonker
+async function sendFlips({url, formData}) {
+    const plainFormData = Object.fromEntries(formData.entries());
+    const formDataJson = JSON.stringify(plainFormData);
+    console.log(formDataJson);
+
+    const options = {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Accept: "application/json"
+		},
+		body: formDataJson
+	};
+
+    const response = await fetch(url, options);
+	return response.json()
+}
+//end chonker
 
