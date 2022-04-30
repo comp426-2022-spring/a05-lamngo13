@@ -92,3 +92,58 @@ async function sendFlips({url, formData}) {
 }
 //end chonker
 
+//NAVIGATION BUTTONS:
+function homeNav() {
+    document.getElementById("homenav").className = "active";
+    document.getElementById("home").className = "active";
+    document.getElementById("singlenav").className = "";
+    document.getElementById("single").className = "inactive";
+    document.getElementById("multinav").className = "";
+    document.getElementById("multi").className = "inactive";
+    document.getElementById("guessnav").className = "";
+    document.getElementById("guesscoin").className = "inactive";
+  }
+  function singleNav() {
+    document.getElementById("homenav").className = "";
+    document.getElementById("home").className = "inactive";
+    document.getElementById("singlenav").className = "active";
+    document.getElementById("single").className = "active";
+    document.getElementById("multinav").className = "";
+    document.getElementById("multi").className = "inactive";
+    document.getElementById("guessnav").className = "";
+    document.getElementById("guesscoin").className = "inactive";
+  }
+  function multiNav() {
+    document.getElementById("homenav").className = "";
+    document.getElementById("home").className = "inactive";
+    document.getElementById("singlenav").className = "";
+    document.getElementById("single").className = "inactive";
+    document.getElementById("multinav").className = "active";
+    document.getElementById("multi").className = "active";
+    document.getElementById("guessnav").className = "";
+    document.getElementById("guesscoin").className = "inactive";
+  }
+  function guessNav() {
+    document.getElementById("homenav").className = "";
+    document.getElementById("home").className = "inactive";
+    document.getElementById("singlenav").className = "";
+    document.getElementById("single").className = "inactive";
+    document.getElementById("multinav").className = "";
+    document.getElementById("multi").className = "inactive";
+    document.getElementById("guessnav").className = "active";
+    document.getElementById("guesscoin").className = "active";
+  } 
+//end nav buttons
+
+// Make a list of coin images
+// This function takes an array of coin flip results and turns them into list elements with corresponding images.
+// This allows the DOM call above to put the list in the appropriate place and show a coin for each of the flips sent back from the server.
+function coinList(array) {
+    let text = "";
+    let arrayLength = array.length
+    for (let i = 0; i < arrayLength; i++) {
+      text += '<li><img src="assets/img/'+array[i]+'.png" class="bigcoin"></li>';
+    }
+    return text
+  }
+
