@@ -182,3 +182,6 @@ process.on('SIGINT', () => {
   console.log('\nApp stopped.');
   });
 });
+
+//IDK MANY BUT THIS IS WHAT GOOGLE SAYS
+module.exports = router;
