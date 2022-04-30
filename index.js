@@ -122,3 +122,63 @@ function coinFlip() {
 
 app.use(express.static('./public'))
 
+app.get("/app/", (req, res, next) => {
+  res.json({"message":"Your API works! (200)"});
+res.status(200);
+});
+
+app.get('/app/flip/', (req, res) => {
+  const flip = coinFlip()
+  res.status(200).json({ "flip" : flip })
+});
+
+app.post('/app/flip/coins/', (req, res, next) => {
+  const flips = coinFlips(req.body.number)
+  const count = countFlips(flips)
+  res.status(200).json({"raw":flips,"summary":count})
+})
+
+app.get('/app/flips/:number', (req, res, next) => {
+  const flips = coinFlips(req.params.number)
+  const count = countFlips(flips)
+  res.status(200).json({"raw":flips,"summary":count})
+});
+
+app.post('/app/flip/call/', (req, res, next) => {
+  const game = flipACoin(req.body.guess)
+  res.status(200).json(game)
+})
+
+app.get('/app/flip/call/:guess(heads|tails)/', (req, res, next) => {
+  const game = flipACoin(req.params.guess)
+  res.status(200).json(game)
+})
+
+if (args.debug || args.d) {
+  app.get('/app/log/access/', (req, res, next) => {
+      const stmt = logdb.prepare("SELECT * FROM accesslog").all();
+    res.status(200).json(stmt);
+  })
+
+  app.get('/app/error/', (req, res, next) => {
+      throw new Error('Error test works.')
+  })
+}
+
+//rip endpoints tbh
+app.use(function(req, res){
+  const statusCode = 404
+  const statusMessage = 'NOT FOUND'
+  res.status(statusCode).end(statusCode+ ' ' +statusMessage)
+});
+
+//server start
+const server = app.listen(port, () => {
+  console.log("Server running on port %PORT%".replace("%PORT%",port))
+});
+
+process.on('SIGINT', () => {
+  server.close(() => {
+  console.log('\nApp stopped.');
+});
+});
