@@ -119,3 +119,6 @@ function coinFlip() {
 
   }
 //END COIN FUNCTIONS
+
+app.use(express.static('./public'))
+
