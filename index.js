@@ -1,5 +1,18 @@
 //minimist stuff
 const args = require('minimist')(process.argv.slice(2));
+const express = require('express')
+const db = require("./src/services/database.js")
+const app = express()
+const morgan = require('morgan')
+const fs = require('fs')
+const http = require('http')
+
+app.use(express.json())
+app.use(express.static("./public"))
+
+const port = args.port || args.p || process.env.PORT || 5000
+args['port', 'help', 'debug', 'log']
+
 
 const help = (`
 server.js [options]
@@ -18,16 +31,36 @@ if (args.help || args.h) {
     console.log(help);
     process.exit(0);
 }
-const express = require('express');
-const app = express();
-const fs = require('fs');
-const morgan = require('morgan');
-const logdb = require('./src/services/database.js');
 
-//Allow json body messages
-app.use(express.json());
 
-const port = args.port || args.p || process.env.PORT || 5000
+var log = args.log || 'true'
+
+if (log == 'true') {
+  const accessLog = fs.createWriteStream('access.log', {flags: 'a'})
+  app.use(morgan('accesslog', {stream: accessLog}))
+}
+
+app.use((req, res, next) => {
+
+  let logdata = {
+      remoteaddr: req.ip,
+      remoteuser: req.user,
+      time: Date.now(),
+      method: req.method,
+      url: req.url,
+      protocol: req.protocol,
+      httpversion: req.httpVersion,
+      status: res.statusCode,
+      referer: req.headers["referer"],
+      useragent: req.headers["user-agent"],
+  };
+
+  const stmt = db.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+  const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.protocol, logdata.httpversion, logdata.status, logdata.referer, logdata.useragent)
+
+  next();
+});
+/*
 if (args.log == 'false') {
   console.log("NOTICE: not creating file access.log")
   //false is string not boolean tbh
@@ -44,25 +77,18 @@ if (args.log == 'false') {
 
 }
 //end else statement
+*/
+const debug = args.debug || false
 
-app.use((req, res, next) => {
-  let logdata = {
-      remoteaddr: req.ip,
-      remoteuser: req.user,
-      time: Date.now(),
-      method: req.method,
-      url: req.url,
-      protocol: req.protocol,
-      httpversion: req.httpVersion,
-      status: res.statusCode,
-      referrer: req.headers['referer'],
-      useragent: req.headers['user-agent']
-  };
-  const stmt = logdb.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referrer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-  const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.protocol, logdata.httpversion, logdata.status, logdata.referrer, logdata.useragent)
-  //console.log(info)
-  next();
-})
+if (debug == 'true') {
+  app.get('/app/log/access', (req, res) => {
+    const stmt = db.prepare("SELECT * FROM accesslog").all();
+    res.status(200).json(stmt);
+  });
+  app.get('/app/error', (req, res) => {
+    throw new Error('Error Test Successful.');
+  });
+}
 
 //BEGIN COIN FUNCTIONS
 function coinFlip() {
@@ -120,18 +146,26 @@ function coinFlip() {
   }
 //END COIN FUNCTIONS
 
-app.use(express.static('./public'))
+//server start
+const server = app.listen(port, () => {
+  console.log("Server running on port %PORT%".replace("%PORT%",port))
+});
 
 app.get("/app/", (req, res, next) => {
-  res.json({"message":"Your API works! (200)"});
-res.status(200);
+        res.statusCode = 200;
+    // Respond with status message "OK"
+        res.statusMessage = 'OK';
+        res.writeHead( res.statusCode, { 'Content-Type' : 'text/plain' });
+        res.end(res.statusCode+ ' ' +res.statusMessage)
 });
 
 app.get('/app/flip/', (req, res) => {
-  const flip = coinFlip()
-  res.status(200).json({ "flip" : flip })
+  res.statusCode = 200;
+  res.statusMessage = 'OK'
+  res.json({flip:coinFlip()})
 });
 
+/////what this again??
 app.post('/app/flip/coins/', (req, res, next) => {
   const flips = coinFlips(req.body.number)
   const count = countFlips(flips)
@@ -170,11 +204,6 @@ app.use(function(req, res){
   const statusCode = 404
   const statusMessage = 'NOT FOUND'
   res.status(statusCode).end(statusCode+ ' ' +statusMessage)
-});
-
-//server start
-const server = app.listen(port, () => {
-  console.log("Server running on port %PORT%".replace("%PORT%",port))
 });
 
 process.on('SIGINT', () => {
