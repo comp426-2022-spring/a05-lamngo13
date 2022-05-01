@@ -37,7 +37,7 @@ var log = args.log || 'true'
 
 if (log == 'true') {
   const accessLog = fs.createWriteStream('access.log', {flags: 'a'})
-  app.use(morgan('accesslog', {stream: accessLog}))
+  app.use(morgan('accesslog', { stream: accessLog }))
 }
 
 app.use((req, res, next) => {
@@ -78,7 +78,7 @@ if (args.log == 'false') {
 }
 //end else statement
 */
-const debug = args.debug || false
+const debug = args.debug || 'false'
 
 if (debug == 'true') {
   app.get('/app/log/access', (req, res) => {
@@ -151,7 +151,7 @@ const server = app.listen(port, () => {
   console.log("Server running on port %PORT%".replace("%PORT%",port))
 });
 
-app.get("/app/", (req, res, next) => {
+app.get("/app/", (req, res) => {
         res.statusCode = 200;
     // Respond with status message "OK"
         res.statusMessage = 'OK';
