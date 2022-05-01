@@ -171,23 +171,43 @@ app.post('/app/flip/coins/', (req, res, next) => {
   const count = countFlips(flips)
   res.status(200).json({"raw":flips,"summary":count})
 })
+//END
 
 app.get('/app/flips/:number', (req, res, next) => {
-  const flips = coinFlips(req.params.number)
-  const count = countFlips(flips)
-  res.status(200).json({"raw":flips,"summary":count})
+  res.statusCode = 200;
+  res.statusMessage = 'OK'
+  var flips = coinFlips(req.params.number)
+  var summary = countFlips(flips)
+  res.status(200).json({"raw" : flips, "summary" : summary})
 });
 
+app.get('/app/flip/call/heads', (req, res) => {
+  res.statusCode = 200;
+  res.send(flipACoin('heads'))
+  res.writeHead(res.statusCode, {'Content-Type': 'text/plain'})
+})
+
+app.get('/app/flip/call/heads', (req, res) => {
+  res.statusCode = 200;
+  res.send(flipACoin('tails'))
+  res.writeHead(res.statusCode, {'Content-Type': 'text/plain'})
+})
+
+/*
+//what this
 app.post('/app/flip/call/', (req, res, next) => {
   const game = flipACoin(req.body.guess)
   res.status(200).json(game)
 })
+//what this
 
 app.get('/app/flip/call/:guess(heads|tails)/', (req, res, next) => {
   const game = flipACoin(req.params.guess)
   res.status(200).json(game)
 })
+*/
 
+/*
 if (args.debug || args.d) {
   app.get('/app/log/access/', (req, res, next) => {
       const stmt = logdb.prepare("SELECT * FROM accesslog").all();
@@ -198,19 +218,18 @@ if (args.debug || args.d) {
       throw new Error('Error test works.')
   })
 }
+*/
 
 //rip endpoints tbh
 app.use(function(req, res){
-  const statusCode = 404
-  const statusMessage = 'NOT FOUND'
-  res.status(statusCode).end(statusCode+ ' ' +statusMessage)
+  res.status(404).send('404 NOT FOUND')
 });
 
 process.on('SIGINT', () => {
   server.close(() => {
   console.log('\nApp stopped.');
-  });
-});
+  })
+})
 
 //IDK MANY BUT THIS IS WHAT GOOGLE SAYS
 //module.exports = router;
