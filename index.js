@@ -18,8 +18,8 @@ if (args.help || args.h) {
     console.log(help);
     process.exit(0);
 }
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 const fs = require('fs');
 const morgan = require('morgan');
 const logdb = require('./src/services/database.js');
